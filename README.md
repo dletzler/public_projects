@@ -1,5 +1,5 @@
 # public_projects
-This is a portfolio of my public projects using Python. This are personal analytic investigations, intended for viewing by any interested parties. Currently, this includes:
+This is a portfolio of my public projects using Python. This are personal analytic investigations, intended for viewing by any interested parties. Currently, this includes the following projects.
 
 ## nba_project
 
