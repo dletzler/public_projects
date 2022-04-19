@@ -33,9 +33,9 @@ def get_all_player_records():
                                                           player=key,
                                                           year=year) for year in years_active}
             all_players[key]['gamelog'] = get_player_gamelogs(all_players[key]['urls'])
+    save_to_pickle(all_players)
     all_players = try_missing_records_again(all_players)
-    with open(raw_save_file, 'wb') as fpath:
-        pickle.dump(all_players, fpath)
+    save_to_pickle(all_players)
     return all_players
 
 
@@ -100,7 +100,7 @@ def get_player_gamelogs(gamelog_urls):
     """
     gamelog_dict = {}
     gamelog_tups = list(gamelog_urls.items())
-    pool = ThreadPool(5)
+    pool = ThreadPool(6)
     gamelogs = pool.map(get_year_gamelog, gamelog_tups)
     pool.close()
     pool.join()
@@ -172,10 +172,19 @@ def try_missing_records_again(all_players):
             if all_players[key]['gamelog'][year].get('error'):
                 attempt = 1
                 while all_players[key]['gamelog'][year].get('error') and attempt < 5:
-                    all_players[key]['gamelog'][year] = get_year_gamelog(year, 
-                        all_players[key]['urls'][year])[1]
+                    tup = (year, all_players[key]['urls'][year])
+                    all_players[key]['gamelog'][year] = get_year_gamelog(tup)[1]
                     attempt += 1
     return all_players
+
+
+def save_to_pickle(all_players):
+    """
+    Pickles the output
+    :param all_players: (dict)
+    """
+    with open(raw_save_file, 'wb') as fpath:
+        pickle.dump(all_players, fpath)
 
 
 def convert_dict_to_df(all_players):
